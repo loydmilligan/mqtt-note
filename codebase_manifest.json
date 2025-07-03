@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "generated": "2025-07-03T16:00:00Z",
+  "project": {
+    "name": "MQTT Note - Obsidian Plugin",
+    "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+    "version": "0.1.0",
+    "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+    "deployment": "Obsidian plugin installation via community plugins or manual installation",
+    "repository": "To be configured after project setup"
+  },
+  "documentation": {
+    "mvp": "docs/mvp.md",
+    "task_list": "tasks/task_list.md",
+    "proposed_final_manifest": "docs/proposed_final_manifest.json",
+    "manifest_evolution": "docs/manifest_evolution.md",
+    "architecture_notes": "Two-way communication system: Notes with mqtt:true frontmatter publish to MQTT topics, incoming MQTT messages create/update notes in specified folder"
+  },
+  "files": {
+    "// Note": "Files will be added as they are implemented through tasks"
+  },
+  "dependencies": {
+    "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+    "mqtt": "MQTT client library for Node.js enabling broker communication",
+    "typescript": "TypeScript compiler for type-safe JavaScript development",
+    "@types/node": "Node.js type definitions for TypeScript compatibility"
+  },
+  "architecture": {
+    "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
+    "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient -> NoteCreator -> Obsidian Notes",
+    "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
+    "key_components": "MQTTClient (broker communication), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
+    "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)"
+  },
+  "development": {
+    "approach": "manifest-driven development with git workflow integration",
+    "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
+    "task_status": "ready to begin - see tasks/task_list.md",
+    "current_phase": "initial setup",
+    "manifest_evolution": "tracked in docs/manifest_evolution.md",
+    "version_control": "git commits tied to task completion"
+  }
+}

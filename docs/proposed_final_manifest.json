@@ -1,0 +1,386 @@
+{
+  "version": "1.0",
+  "generated": "2025-07-03T16:00:00Z",
+  "project": {
+    "name": "MQTT Note - Obsidian Plugin",
+    "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+    "version": "0.1.0",
+    "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+    "deployment": "Obsidian plugin installation via community plugins or manual installation",
+    "repository": "To be configured after project setup"
+  },
+  "documentation": {
+    "mvp": "docs/mvp.md",
+    "prd": "docs/prd.md",
+    "task_list": "tasks/task_list.md",
+    "proposed_final_manifest": "docs/proposed_final_manifest.json",
+    "architecture_notes": "Two-way communication system: Notes with mqtt:true frontmatter publish to MQTT topics, incoming MQTT messages create/update notes in specified folder"
+  },
+  "files": {
+    "main.ts": {
+      "purpose": "Main plugin entry point, handles Obsidian plugin lifecycle and orchestrates all components",
+      "exports": {
+        "functions": [],
+        "classes": [
+          {
+            "name": "MQTTNotePlugin",
+            "description": "Main plugin class that extends Obsidian Plugin and manages MQTT note functionality",
+            "constructor": "MQTTNotePlugin(app: App, manifest: PluginManifest)",
+            "methods": [
+              {
+                "name": "onload",
+                "signature": "onload() -> Promise<void>",
+                "description": "Initializes plugin: loads settings, connects MQTT client, sets up publishers/creators, registers commands",
+                "parameters": {},
+                "returns": "Promise that resolves when plugin is fully loaded"
+              },
+              {
+                "name": "onunload",
+                "signature": "onunload() -> void",
+                "description": "Cleanup plugin resources: disconnects MQTT client, removes event listeners",
+                "parameters": {},
+                "returns": "void"
+              }
+            ],
+            "properties": [
+              {
+                "name": "settings",
+                "type": "MQTTNoteSettings",
+                "description": "Plugin settings loaded from Obsidian's data storage"
+              },
+              {
+                "name": "mqttClient",
+                "type": "MQTTClient",
+                "description": "MQTT client instance for broker communication"
+              },
+              {
+                "name": "notePublisher",
+                "type": "NotePublisher",
+                "description": "Handles publishing notes to MQTT topics"
+              },
+              {
+                "name": "noteCreator",
+                "type": "NoteCreator",
+                "description": "Creates/updates notes from MQTT messages"
+              }
+            ]
+          }
+        ],
+        "constants": []
+      },
+      "imports": ["obsidian", "./settings", "./mqttClient", "./notePublisher", "./noteCreator", "./types"],
+      "sideEffects": ["registers-commands", "loads-settings", "connects-mqtt", "registers-events"]
+    },
+    "settings.ts": {
+      "purpose": "Plugin settings management, UI, and persistence",
+      "exports": {
+        "functions": [],
+        "classes": [
+          {
+            "name": "MQTTNoteSettingTab",
+            "description": "Settings tab UI for configuring MQTT broker connection and plugin behavior",
+            "constructor": "MQTTNoteSettingTab(app: App, plugin: MQTTNotePlugin)",
+            "methods": [
+              {
+                "name": "display",
+                "signature": "display() -> void",
+                "description": "Renders the settings UI with form inputs for all configuration options",
+                "parameters": {},
+                "returns": "void"
+              }
+            ],
+            "properties": [
+              {
+                "name": "plugin",
+                "type": "MQTTNotePlugin",
+                "description": "Reference to the main plugin instance"
+              }
+            ]
+          }
+        ],
+        "constants": [
+          {
+            "name": "DEFAULT_SETTINGS",
+            "type": "MQTTNoteSettings",
+            "value": "Default configuration values for all plugin settings",
+            "description": "Default settings including broker URL, credentials, topics, and folders"
+          }
+        ]
+      },
+      "imports": ["obsidian", "./types"],
+      "sideEffects": ["creates-settings-ui", "saves-settings", "loads-settings"]
+    },
+    "mqttClient.ts": {
+      "purpose": "MQTT broker connection management and message handling",
+      "exports": {
+        "functions": [],
+        "classes": [
+          {
+            "name": "MQTTClient",
+            "description": "Manages MQTT broker connection, publishing, and subscription with error handling and reconnection logic",
+            "constructor": "MQTTClient()",
+            "methods": [
+              {
+                "name": "connect",
+                "signature": "connect(brokerUrl: string, username: string, password: string) -> Promise<void>",
+                "description": "Establishes connection to MQTT broker with authentication and retry logic",
+                "parameters": {
+                  "brokerUrl": "MQTT broker URL (e.g., mqtt://192.168.1.100:1883)",
+                  "username": "MQTT broker username (optional)",
+                  "password": "MQTT broker password (optional)"
+                },
+                "returns": "Promise that resolves when connection is established"
+              },
+              {
+                "name": "disconnect",
+                "signature": "disconnect() -> Promise<void>",
+                "description": "Gracefully disconnects from MQTT broker and cleans up resources",
+                "parameters": {},
+                "returns": "Promise that resolves when disconnection is complete"
+              },
+              {
+                "name": "publish",
+                "signature": "publish(topic: string, payload: string) -> Promise<void>",
+                "description": "Publishes message to specified MQTT topic with error handling",
+                "parameters": {
+                  "topic": "MQTT topic to publish to",
+                  "payload": "Message payload as string (typically JSON)"
+                },
+                "returns": "Promise that resolves when message is published"
+              },
+              {
+                "name": "subscribe",
+                "signature": "subscribe(topic: string, callback: (topic: string, payload: string) -> void) -> Promise<void>",
+                "description": "Subscribes to MQTT topic with message callback handler",
+                "parameters": {
+                  "topic": "MQTT topic pattern to subscribe to (supports wildcards)",
+                  "callback": "Function called when messages are received"
+                },
+                "returns": "Promise that resolves when subscription is active"
+              },
+              {
+                "name": "isConnected",
+                "signature": "isConnected() -> boolean",
+                "description": "Returns current connection status to MQTT broker",
+                "parameters": {},
+                "returns": "true if connected to broker, false otherwise"
+              }
+            ],
+            "properties": [
+              {
+                "name": "client",
+                "type": "mqtt.MqttClient",
+                "description": "Internal MQTT client instance"
+              },
+              {
+                "name": "connectionStatus",
+                "type": "boolean",
+                "description": "Current connection status"
+              }
+            ]
+          }
+        ],
+        "constants": []
+      },
+      "imports": ["mqtt"],
+      "sideEffects": ["network-connections", "mqtt-subscriptions", "mqtt-publications"]
+    },
+    "notePublisher.ts": {
+      "purpose": "Handles publishing Obsidian notes to MQTT topics based on frontmatter configuration",
+      "exports": {
+        "functions": [],
+        "classes": [
+          {
+            "name": "NotePublisher",
+            "description": "Manages note-to-MQTT publishing with frontmatter detection and payload creation",
+            "constructor": "NotePublisher(mqttClient: MQTTClient)",
+            "methods": [
+              {
+                "name": "publishNote",
+                "signature": "publishNote(note: TFile, settings: MQTTNoteSettings) -> Promise<void>",
+                "description": "Publishes a note to MQTT if it has mqtt:true frontmatter",
+                "parameters": {
+                  "note": "Obsidian TFile object representing the note",
+                  "settings": "Plugin settings for topic prefix and other configuration"
+                },
+                "returns": "Promise that resolves when note is published or skipped"
+              },
+              {
+                "name": "shouldPublishNote",
+                "signature": "shouldPublishNote(note: TFile) -> Promise<boolean>",
+                "description": "Checks if note should be published based on frontmatter mqtt:true setting",
+                "parameters": {
+                  "note": "Obsidian TFile object to check"
+                },
+                "returns": "Promise resolving to true if note should be published"
+              },
+              {
+                "name": "generateTopic",
+                "signature": "generateTopic(noteTitle: string, prefix: string) -> string",
+                "description": "Generates MQTT topic from note title and configured prefix",
+                "parameters": {
+                  "noteTitle": "Title of the note (without .md extension)",
+                  "prefix": "Configured topic prefix (e.g., 'obsidian/')"
+                },
+                "returns": "Complete MQTT topic string"
+              },
+              {
+                "name": "createPayload",
+                "signature": "createPayload(note: TFile) -> Promise<string>",
+                "description": "Creates JSON payload from note frontmatter and body content",
+                "parameters": {
+                  "note": "Obsidian TFile object to extract content from"
+                },
+                "returns": "Promise resolving to JSON string payload"
+              }
+            ],
+            "properties": [
+              {
+                "name": "mqttClient",
+                "type": "MQTTClient",
+                "description": "MQTT client instance for publishing messages"
+              }
+            ]
+          }
+        ],
+        "constants": []
+      },
+      "imports": ["obsidian", "./mqttClient", "./types"],
+      "sideEffects": ["publishes-to-mqtt", "reads-files"]
+    },
+    "noteCreator.ts": {
+      "purpose": "Creates and updates Obsidian notes from incoming MQTT messages",
+      "exports": {
+        "functions": [],
+        "classes": [
+          {
+            "name": "NoteCreator",
+            "description": "Manages creation of notes from MQTT messages with proper formatting and file management",
+            "constructor": "NoteCreator(app: App)",
+            "methods": [
+              {
+                "name": "handleIncomingMessage",
+                "signature": "handleIncomingMessage(topic: string, payload: string, settings: MQTTNoteSettings) -> Promise<void>",
+                "description": "Processes incoming MQTT message and creates/updates corresponding note",
+                "parameters": {
+                  "topic": "MQTT topic the message was received on",
+                  "payload": "Message payload (string or JSON)",
+                  "settings": "Plugin settings for folder configuration"
+                },
+                "returns": "Promise that resolves when note is created/updated"
+              },
+              {
+                "name": "createNoteFromMessage",
+                "signature": "createNoteFromMessage(topic: string, payload: string, folder: string) -> Promise<TFile>",
+                "description": "Creates new note file from MQTT message with proper naming and content",
+                "parameters": {
+                  "topic": "MQTT topic to derive note name from",
+                  "payload": "Message payload to use as note content",
+                  "folder": "Folder path where note should be created"
+                },
+                "returns": "Promise resolving to created TFile object"
+              },
+              {
+                "name": "updateExistingNote",
+                "signature": "updateExistingNote(note: TFile, payload: string) -> Promise<void>",
+                "description": "Updates existing note with new payload content while preserving structure",
+                "parameters": {
+                  "note": "Existing note file to update",
+                  "payload": "New payload content to add/replace"
+                },
+                "returns": "Promise that resolves when note is updated"
+              },
+              {
+                "name": "generateNoteTitle",
+                "signature": "generateNoteTitle(topic: string) -> string",
+                "description": "Generates valid note filename from MQTT topic by sanitizing special characters",
+                "parameters": {
+                  "topic": "MQTT topic to convert to filename"
+                },
+                "returns": "Sanitized filename suitable for note creation"
+              }
+            ],
+            "properties": [
+              {
+                "name": "app",
+                "type": "App",
+                "description": "Obsidian App instance for file operations"
+              }
+            ]
+          }
+        ],
+        "constants": []
+      },
+      "imports": ["obsidian", "./types"],
+      "sideEffects": ["creates-files", "modifies-files", "writes-files"]
+    },
+    "types.ts": {
+      "purpose": "TypeScript interfaces and type definitions for the plugin",
+      "exports": {
+        "functions": [],
+        "classes": [],
+        "constants": [
+          {
+            "name": "MQTTNoteSettings",
+            "type": "interface",
+            "value": "Interface defining all plugin settings",
+            "description": "Complete settings interface including broker connection, topics, folders, and publishing mode"
+          },
+          {
+            "name": "MQTTMessage",
+            "type": "interface", 
+            "value": "Interface for MQTT message structure",
+            "description": "Defines structure of MQTT messages with topic and payload"
+          },
+          {
+            "name": "PublishMode",
+            "type": "enum",
+            "value": "Enum for publishing modes",
+            "description": "Defines automatic vs manual publishing modes"
+          }
+        ]
+      },
+      "imports": [],
+      "sideEffects": []
+    },
+    "manifest.json": {
+      "purpose": "Obsidian plugin manifest with metadata and permissions",
+      "exports": {
+        "functions": [],
+        "classes": [],
+        "constants": []
+      },
+      "imports": [],
+      "sideEffects": []
+    },
+    "package.json": {
+      "purpose": "Node.js package configuration with dependencies and build scripts",
+      "exports": {
+        "functions": [],
+        "classes": [],
+        "constants": []
+      },
+      "imports": [],
+      "sideEffects": []
+    }
+  },
+  "dependencies": {
+    "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+    "mqtt": "MQTT client library for Node.js enabling broker communication",
+    "typescript": "TypeScript compiler for type-safe JavaScript development",
+    "@types/node": "Node.js type definitions for TypeScript compatibility"
+  },
+  "architecture": {
+    "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
+    "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient -> NoteCreator -> Obsidian Notes",
+    "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
+    "key_components": "MQTTClient (broker communication), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
+    "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)"
+  },
+  "development": {
+    "approach": "manifest-driven development with task-by-task implementation",
+    "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed)",
+    "task_status": "ready for implementation - see tasks/task-list.md",
+    "current_phase": "planned - ready for bootstrap and implementation"
+  }
+}
