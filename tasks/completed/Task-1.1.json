@@ -1,0 +1,186 @@
+{
+  "task_id": "Task-1.1",
+  "task_description": "Initialize Project Structure - Create project directory structure, initialize npm project with package.json, install dependencies (obsidian, mqtt, typescript, @types/node), set up TypeScript configuration (tsconfig.json), create basic build script, create initial manifest.json for Obsidian plugin",
+  "current_manifest": {
+    "version": "1.0",
+    "generated": "2025-07-03T16:00:00Z",
+    "project": {
+      "name": "MQTT Note - Obsidian Plugin",
+      "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+      "version": "0.1.0",
+      "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+      "deployment": "Obsidian plugin installation via community plugins or manual installation",
+      "repository": "To be configured after project setup"
+    },
+    "documentation": {
+      "mvp": "docs/mvp.md",
+      "task_list": "tasks/task_list.md",
+      "proposed_final_manifest": "docs/proposed_final_manifest.json",
+      "manifest_evolution": "docs/manifest_evolution.md",
+      "architecture_notes": "Two-way communication system: Notes with mqtt:true frontmatter publish to MQTT topics, incoming MQTT messages create/update notes in specified folder"
+    },
+    "files": {
+      "// Note": "Files will be added as they are implemented through tasks"
+    },
+    "dependencies": {
+      "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+      "mqtt": "MQTT client library for Node.js enabling broker communication",
+      "typescript": "TypeScript compiler for type-safe JavaScript development",
+      "@types/node": "Node.js type definitions for TypeScript compatibility"
+    },
+    "architecture": {
+      "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
+      "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient -> NoteCreator -> Obsidian Notes",
+      "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
+      "key_components": "MQTTClient (broker communication), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
+      "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)"
+    },
+    "development": {
+      "approach": "manifest-driven development with git workflow integration",
+      "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
+      "task_status": "ready to begin - see tasks/task_list.md",
+      "current_phase": "initial setup",
+      "manifest_evolution": "tracked in docs/manifest_evolution.md",
+      "version_control": "git commits tied to task completion"
+    }
+  },
+  "expected_manifest": {
+    "version": "1.0",
+    "generated": "2025-07-03T16:00:00Z",
+    "project": {
+      "name": "MQTT Note - Obsidian Plugin",
+      "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+      "version": "0.1.0",
+      "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+      "deployment": "Obsidian plugin installation via community plugins or manual installation",
+      "repository": "To be configured after project setup"
+    },
+    "documentation": {
+      "mvp": "docs/mvp.md",
+      "task_list": "tasks/task_list.md",
+      "proposed_final_manifest": "docs/proposed_final_manifest.json",
+      "manifest_evolution": "docs/manifest_evolution.md",
+      "architecture_notes": "Two-way communication system: Notes with mqtt:true frontmatter publish to MQTT topics, incoming MQTT messages create/update notes in specified folder"
+    },
+    "files": {
+      "package.json": {
+        "purpose": "Node.js package configuration with dependencies and build scripts",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "tsconfig.json": {
+        "purpose": "TypeScript compiler configuration for Obsidian plugin development",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "manifest.json": {
+        "purpose": "Obsidian plugin manifest with metadata and permissions",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/": {
+        "purpose": "Source code directory for TypeScript implementation files",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      }
+    },
+    "dependencies": {
+      "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+      "mqtt": "MQTT client library for Node.js enabling broker communication",
+      "typescript": "TypeScript compiler for type-safe JavaScript development",
+      "@types/node": "Node.js type definitions for TypeScript compatibility"
+    },
+    "architecture": {
+      "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
+      "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient -> NoteCreator -> Obsidian Notes",
+      "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
+      "key_components": "MQTTClient (broker communication), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
+      "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)"
+    },
+    "development": {
+      "approach": "manifest-driven development with git workflow integration",
+      "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
+      "task_status": "Task-1.1 in progress - project structure setup",
+      "current_phase": "Phase 1: Project Setup & Infrastructure",
+      "manifest_evolution": "tracked in docs/manifest_evolution.md",
+      "version_control": "git commits tied to task completion"
+    }
+  },
+  "implementation_notes": {
+    "approach": "Set up complete Node.js/TypeScript project structure with proper Obsidian plugin configuration and build system",
+    "files_to_create": [
+      {
+        "file": "package.json",
+        "purpose": "Node.js package configuration with dependencies, scripts, and metadata",
+        "key_exports": ["name", "version", "dependencies", "devDependencies", "scripts"]
+      },
+      {
+        "file": "tsconfig.json",
+        "purpose": "TypeScript compiler configuration optimized for Obsidian plugin development",
+        "key_exports": ["compilerOptions", "include", "exclude"]
+      },
+      {
+        "file": "manifest.json",
+        "purpose": "Obsidian plugin manifest with metadata, permissions, and entry point",
+        "key_exports": ["id", "name", "version", "description", "author", "minAppVersion", "main"]
+      },
+      {
+        "file": "src/",
+        "purpose": "Source code directory for TypeScript implementation files",
+        "key_exports": ["directory structure"]
+      }
+    ],
+    "files_to_modify": [
+      {
+        "file": "codebase_manifest.json",
+        "changes": "Update files section to include new project structure files"
+      }
+    ],
+    "dependencies": [
+      "obsidian (dev dependency for type definitions)",
+      "mqtt (production dependency for MQTT client)",
+      "typescript (dev dependency for compilation)",
+      "@types/node (dev dependency for Node.js types)"
+    ],
+    "integration_points": [
+      "Obsidian plugin API through manifest.json configuration",
+      "TypeScript compilation system through tsconfig.json",
+      "Build system through package.json scripts",
+      "Project structure for future source code organization"
+    ],
+    "testing_approach": "Verify npm install succeeds, TypeScript compiles without errors, project structure matches expected layout, and build scripts execute successfully"
+  },
+  "acceptance_criteria": [
+    "Project builds without errors using npm run build",
+    "All dependencies install correctly without conflicts",
+    "TypeScript configuration is properly set up for Obsidian plugin development",
+    "Manifest.json contains correct plugin metadata and entry point",
+    "Source directory structure is created and ready for implementation",
+    "Package.json includes all necessary dependencies and build scripts",
+    "Project structure matches the planned architecture layout"
+  ],
+  "estimated_complexity": "Medium",
+  "prerequisites": [
+    "Bootstrap process completed (directory structure, documentation, git repository)"
+  ]
+}

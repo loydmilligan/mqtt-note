@@ -1,0 +1,35 @@
+{
+  "name": "mqtt-note-obsidian-plugin",
+  "version": "0.1.0",
+  "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+  "main": "main.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -p . --watch",
+    "lint": "eslint src/ --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "obsidian",
+    "plugin",
+    "mqtt",
+    "notes",
+    "communication"
+  ],
+  "author": "MQTT Note Plugin Author",
+  "license": "MIT",
+  "dependencies": {
+    "mqtt": "^5.0.0"
+  },
+  "devDependencies": {
+    "obsidian": "latest",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

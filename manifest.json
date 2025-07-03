@@ -1,0 +1,12 @@
+{
+  "id": "mqtt-note",
+  "name": "MQTT Note",
+  "version": "0.1.0",
+  "minAppVersion": "0.15.0",
+  "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+  "author": "MQTT Note Plugin Author",
+  "authorUrl": "",
+  "fundingUrl": "",
+  "isDesktopOnly": false,
+  "main": "main.js"
+}
