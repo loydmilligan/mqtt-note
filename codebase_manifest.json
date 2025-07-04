@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generated": "2025-07-03T16:00:00Z",
+  "generated": "2025-07-04T00:00:00Z",
   "project": {
     "name": "MQTT Note - Obsidian Plugin",
     "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
@@ -56,6 +56,16 @@
       },
       "imports": [],
       "sideEffects": []
+    },
+    "src/types.ts": {
+      "purpose": "Core type definitions for plugin settings, MQTT messages, and publishing modes",
+      "exports": {
+        "functions": [],
+        "classes": [],
+        "constants": ["MQTTNoteSettings", "MQTTMessage", "PublishMode"]
+      },
+      "imports": [],
+      "sideEffects": []
     }
   },
   "dependencies": {
@@ -74,7 +84,7 @@
   "development": {
     "approach": "manifest-driven development with git workflow integration",
     "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
-    "task_status": "Task-1.1 completed - project structure setup complete",
+    "task_status": "Task-1.2 completed - core type definitions created",
     "current_phase": "Phase 1: Project Setup & Infrastructure",
     "manifest_evolution": "tracked in docs/manifest_evolution.md",
     "version_control": "git commits tied to task completion"
