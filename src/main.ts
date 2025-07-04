@@ -1,8 +1,9 @@
 import { Plugin, TFile, Notice, MarkdownView } from 'obsidian';
-import { MQTTNoteSettings } from './types';
+import { MQTTNoteSettings, MQTTMessage } from './types';
 import { DEFAULT_SETTINGS, MQTTNoteSettingTab } from './settings';
 import { MQTTClient } from './mqttClient';
 import { NotePublisher } from './notePublisher';
+import { NoteCreator } from './noteCreator';
 
 /**
  * Main plugin class that orchestrates all MQTT Note functionality
@@ -12,6 +13,7 @@ export default class MQTTNotePlugin extends Plugin {
     settings!: MQTTNoteSettings;
     mqttClient!: MQTTClient;
     notePublisher!: NotePublisher;
+    noteCreator!: NoteCreator;
     private autoPublishDebounceMap: Map<string, NodeJS.Timeout> = new Map();
 
     /**
@@ -30,6 +32,9 @@ export default class MQTTNotePlugin extends Plugin {
             // Initialize note publisher
             this.notePublisher = new NotePublisher(this.mqttClient, this.settings, this.app);
 
+            // Initialize note creator
+            this.noteCreator = new NoteCreator(this.app);
+
             // Register commands
             this.registerCommands();
 
@@ -43,7 +48,7 @@ export default class MQTTNotePlugin extends Plugin {
             
             // Attempt to connect to MQTT broker if settings are configured
             if (this.settings.brokerUrl) {
-                this.connectMQTTClient();
+                await this.connectMQTTClient();
             }
 
         } catch (error) {
@@ -152,6 +157,11 @@ export default class MQTTNotePlugin extends Plugin {
                 console.error('MQTT Note Plugin: MQTT client error:', error);
                 new Notice(`MQTT client error: ${error.message}`);
             });
+
+            // Listen for incoming MQTT messages and route to NoteCreator
+            this.mqttClient.on('message', (message: MQTTMessage) => {
+                this.handleIncomingMessage(message);
+            });
         }
 
         // Listen for file modification events for auto-publish
@@ -179,6 +189,11 @@ export default class MQTTNotePlugin extends Plugin {
             console.log('MQTT Note Plugin: Attempting to connect to MQTT broker...');
             await this.mqttClient.connect(this.settings);
             console.log('MQTT Note Plugin: MQTT client connected successfully');
+
+            // Set up subscription for incoming messages if topic is configured
+            if (this.settings.incomingTopic) {
+                await this.setupIncomingMessageSubscription();
+            }
         } catch (error) {
             console.error('MQTT Note Plugin: Failed to connect to MQTT broker:', error);
             const errorMessage = error instanceof Error ? error.message : String(error);
@@ -200,6 +215,12 @@ export default class MQTTNotePlugin extends Plugin {
                     return;
                 }
                 await this.mqttClient.connect(this.settings);
+                
+                // Set up subscription for incoming messages if topic is configured
+                if (this.settings.incomingTopic) {
+                    await this.setupIncomingMessageSubscription();
+                }
+                
                 new Notice('MQTT client connected');
             }
         } catch (error) {
@@ -374,5 +395,54 @@ export default class MQTTNotePlugin extends Plugin {
         }, debounceDelay);
 
         this.autoPublishDebounceMap.set(debounceKey, newTimeout);
+    }
+
+    /**
+     * Sets up subscription for incoming MQTT messages
+     */
+    private async setupIncomingMessageSubscription() {
+        try {
+            if (!this.settings.incomingTopic) {
+                console.log('MQTT Note Plugin: No incoming topic configured, skipping subscription');
+                return;
+            }
+
+            console.log(`MQTT Note Plugin: Setting up subscription for topic: ${this.settings.incomingTopic}`);
+            
+            // Subscribe to the incoming topic pattern
+            await this.mqttClient.subscribe(this.settings.incomingTopic, (message: MQTTMessage) => {
+                // The message handler is already set up in setupEventListeners
+                console.log(`MQTT Note Plugin: Received message from subscribed topic: ${message.topic}`);
+            });
+
+            console.log(`MQTT Note Plugin: Successfully subscribed to topic: ${this.settings.incomingTopic}`);
+        } catch (error) {
+            console.error('MQTT Note Plugin: Failed to set up incoming message subscription:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            new Notice(`Failed to subscribe to incoming messages: ${errorMessage}`);
+        }
+    }
+
+    /**
+     * Handles incoming MQTT messages by routing them to the NoteCreator
+     */
+    private async handleIncomingMessage(message: MQTTMessage) {
+        try {
+            console.log(`MQTT Note Plugin: Handling incoming message from topic: ${message.topic}`);
+            
+            // Check if incoming note folder is configured
+            if (!this.settings.incomingNoteFolder) {
+                console.log('MQTT Note Plugin: No incoming note folder configured, skipping message');
+                return;
+            }
+
+            // Route message to NoteCreator
+            await this.noteCreator.handleIncomingMessage(message, this.settings);
+            
+            console.log(`MQTT Note Plugin: Successfully processed incoming message from topic: ${message.topic}`);
+        } catch (error) {
+            console.error('MQTT Note Plugin: Failed to handle incoming message:', error);
+            // Error is already logged and shown by NoteCreator, no need to show another notice
+        }
     }
 }
