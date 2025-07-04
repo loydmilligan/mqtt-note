@@ -5,6 +5,10 @@ const settings_1 = require("./settings");
 const mqttClient_1 = require("./mqttClient");
 const notePublisher_1 = require("./notePublisher");
 class MQTTNotePlugin extends obsidian_1.Plugin {
+    constructor() {
+        super(...arguments);
+        this.autoPublishDebounceMap = new Map();
+    }
     async onload() {
         console.log('MQTT Note Plugin: Starting initialization...');
         try {
@@ -27,6 +31,10 @@ class MQTTNotePlugin extends obsidian_1.Plugin {
     onunload() {
         console.log('MQTT Note Plugin: Starting cleanup...');
         try {
+            this.autoPublishDebounceMap.forEach((timeout) => {
+                clearTimeout(timeout);
+            });
+            this.autoPublishDebounceMap.clear();
             if (this.mqttClient) {
                 this.mqttClient.disconnect();
             }
@@ -90,6 +98,11 @@ class MQTTNotePlugin extends obsidian_1.Plugin {
                 new obsidian_1.Notice(`MQTT client error: ${error.message}`);
             });
         }
+        this.registerEvent(this.app.vault.on('modify', (file) => {
+            if (file instanceof obsidian_1.TFile && file.extension === 'md') {
+                this.handleAutoPublishWithDebounce(file);
+            }
+        }));
         console.log('MQTT Note Plugin: Event listeners set up successfully');
     }
     async connectMQTTClient() {
@@ -226,6 +239,19 @@ class MQTTNotePlugin extends obsidian_1.Plugin {
         catch (error) {
             console.error('MQTT Note Plugin: Auto-publish failed:', error);
         }
+    }
+    handleAutoPublishWithDebounce(file) {
+        const debounceKey = file.path;
+        const debounceDelay = 1000;
+        const existingTimeout = this.autoPublishDebounceMap.get(debounceKey);
+        if (existingTimeout) {
+            clearTimeout(existingTimeout);
+        }
+        const newTimeout = setTimeout(() => {
+            this.handleAutoPublish(file);
+            this.autoPublishDebounceMap.delete(debounceKey);
+        }, debounceDelay);
+        this.autoPublishDebounceMap.set(debounceKey, newTimeout);
     }
 }
 exports.default = MQTTNotePlugin;

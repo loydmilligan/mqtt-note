@@ -12,6 +12,7 @@ export default class MQTTNotePlugin extends Plugin {
     settings!: MQTTNoteSettings;
     mqttClient!: MQTTClient;
     notePublisher!: NotePublisher;
+    private autoPublishDebounceMap: Map<string, NodeJS.Timeout> = new Map();
 
     /**
      * Plugin initialization - loads settings, initializes components, registers commands
@@ -58,6 +59,12 @@ export default class MQTTNotePlugin extends Plugin {
         console.log('MQTT Note Plugin: Starting cleanup...');
 
         try {
+            // Clear all debounce timers
+            this.autoPublishDebounceMap.forEach((timeout) => {
+                clearTimeout(timeout);
+            });
+            this.autoPublishDebounceMap.clear();
+
             // Disconnect MQTT client
             if (this.mqttClient) {
                 this.mqttClient.disconnect();
@@ -146,6 +153,15 @@ export default class MQTTNotePlugin extends Plugin {
                 new Notice(`MQTT client error: ${error.message}`);
             });
         }
+
+        // Listen for file modification events for auto-publish
+        this.registerEvent(
+            this.app.vault.on('modify', (file) => {
+                if (file instanceof TFile && file.extension === 'md') {
+                    this.handleAutoPublishWithDebounce(file);
+                }
+            })
+        );
 
         console.log('MQTT Note Plugin: Event listeners set up successfully');
     }
@@ -335,5 +351,28 @@ export default class MQTTNotePlugin extends Plugin {
             console.error('MQTT Note Plugin: Auto-publish failed:', error);
             // Don't show user notification for auto-publish failures to avoid spam
         }
+    }
+
+    /**
+     * Handles auto-publish with debouncing to prevent spam on rapid file modifications
+     * @param file The file that was modified
+     */
+    private handleAutoPublishWithDebounce(file: TFile) {
+        const debounceKey = file.path;
+        const debounceDelay = 1000; // 1 second debounce
+
+        // Clear existing timeout for this file
+        const existingTimeout = this.autoPublishDebounceMap.get(debounceKey);
+        if (existingTimeout) {
+            clearTimeout(existingTimeout);
+        }
+
+        // Set new timeout for auto-publish
+        const newTimeout = setTimeout(() => {
+            this.handleAutoPublish(file);
+            this.autoPublishDebounceMap.delete(debounceKey);
+        }, debounceDelay);
+
+        this.autoPublishDebounceMap.set(debounceKey, newTimeout);
     }
 }
