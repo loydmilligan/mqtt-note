@@ -7,7 +7,8 @@
     "build": "tsc -p .",
     "dev": "tsc -p . --watch",
     "lint": "eslint src/ --ext .ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node tests/mqtt-test.js",
+    "test:mqtt": "node tests/mqtt-test.js"
   },
   "keywords": [
     "obsidian",

@@ -1,0 +1,300 @@
+{
+  "task_id": "Task-2.2",
+  "task_description": "Test MQTT Connectivity - Set up test MQTT broker (local or cloud), create simple connection test, test publish functionality, test subscribe functionality, test connection error scenarios, verify reconnection logic",
+  "current_manifest": {
+    "version": "1.0",
+    "generated": "2025-07-04T02:00:00Z",
+    "project": {
+      "name": "MQTT Note - Obsidian Plugin",
+      "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+      "version": "0.1.0",
+      "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+      "deployment": "Obsidian plugin installation via community plugins or manual installation",
+      "repository": "To be configured after project setup"
+    },
+    "documentation": {
+      "mvp": "docs/mvp.md",
+      "task_list": "tasks/task_list.md",
+      "proposed_final_manifest": "docs/proposed_final_manifest.json",
+      "manifest_evolution": "docs/manifest_evolution.md",
+      "architecture_notes": "Two-way communication system: Notes with mqtt:true frontmatter publish to MQTT topics, incoming MQTT messages create/update notes in specified folder"
+    },
+    "files": {
+      "package.json": {
+        "purpose": "Node.js package configuration with dependencies and build scripts",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "tsconfig.json": {
+        "purpose": "TypeScript compiler configuration for Obsidian plugin development",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "manifest.json": {
+        "purpose": "Obsidian plugin manifest with metadata and permissions",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/": {
+        "purpose": "Source code directory for TypeScript implementation files",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/types.ts": {
+        "purpose": "Core type definitions for plugin settings, MQTT messages, and publishing modes",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": ["MQTTNoteSettings", "MQTTMessage", "PublishMode"]
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/settings.ts": {
+        "purpose": "Settings management with default values, UI tab class, and validation logic",
+        "exports": {
+          "functions": [],
+          "classes": ["MQTTNoteSettingTab"],
+          "constants": ["DEFAULT_SETTINGS"]
+        },
+        "imports": ["obsidian", "./types"],
+        "sideEffects": []
+      },
+      "src/mqttClient.ts": {
+        "purpose": "MQTT client implementation with connection management, publishing, and subscription capabilities",
+        "exports": {
+          "functions": [],
+          "classes": ["MQTTClient"],
+          "constants": []
+        },
+        "imports": ["mqtt", "./types"],
+        "sideEffects": []
+      }
+    },
+    "dependencies": {
+      "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+      "mqtt": "MQTT client library for Node.js enabling broker communication",
+      "typescript": "TypeScript compiler for type-safe JavaScript development",
+      "@types/node": "Node.js type definitions for TypeScript compatibility"
+    },
+    "architecture": {
+      "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
+      "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient -> NoteCreator -> Obsidian Notes",
+      "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
+      "key_components": "MQTTClient (broker communication), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
+      "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)"
+    },
+    "development": {
+      "approach": "manifest-driven development with git workflow integration",
+      "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
+      "task_status": "Task-2.1 completed - MQTT client implemented",
+      "current_phase": "Phase 2: Core MQTT Functionality",
+      "manifest_evolution": "tracked in docs/manifest_evolution.md",
+      "version_control": "git commits tied to task completion"
+    }
+  },
+  "expected_manifest": {
+    "version": "1.0",
+    "generated": "2025-07-04T02:00:00Z",
+    "project": {
+      "name": "MQTT Note - Obsidian Plugin",
+      "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+      "version": "0.1.0",
+      "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+      "deployment": "Obsidian plugin installation via community plugins or manual installation",
+      "repository": "To be configured after project setup"
+    },
+    "documentation": {
+      "mvp": "docs/mvp.md",
+      "task_list": "tasks/task_list.md",
+      "proposed_final_manifest": "docs/proposed_final_manifest.json",
+      "manifest_evolution": "docs/manifest_evolution.md",
+      "architecture_notes": "Two-way communication system: Notes with mqtt:true frontmatter publish to MQTT topics, incoming MQTT messages create/update notes in specified folder"
+    },
+    "files": {
+      "package.json": {
+        "purpose": "Node.js package configuration with dependencies and build scripts",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "tsconfig.json": {
+        "purpose": "TypeScript compiler configuration for Obsidian plugin development",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "manifest.json": {
+        "purpose": "Obsidian plugin manifest with metadata and permissions",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/": {
+        "purpose": "Source code directory for TypeScript implementation files",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/types.ts": {
+        "purpose": "Core type definitions for plugin settings, MQTT messages, and publishing modes",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": ["MQTTNoteSettings", "MQTTMessage", "PublishMode"]
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/settings.ts": {
+        "purpose": "Settings management with default values, UI tab class, and validation logic",
+        "exports": {
+          "functions": [],
+          "classes": ["MQTTNoteSettingTab"],
+          "constants": ["DEFAULT_SETTINGS"]
+        },
+        "imports": ["obsidian", "./types"],
+        "sideEffects": []
+      },
+      "src/mqttClient.ts": {
+        "purpose": "MQTT client implementation with connection management, publishing, and subscription capabilities",
+        "exports": {
+          "functions": [],
+          "classes": ["MQTTClient"],
+          "constants": []
+        },
+        "imports": ["mqtt", "./types"],
+        "sideEffects": []
+      },
+      "tests/": {
+        "purpose": "Test directory for MQTT connectivity and functionality tests",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "tests/mqtt-test.js": {
+        "purpose": "Comprehensive MQTT connectivity test suite covering connection, publish, subscribe, and error scenarios",
+        "exports": {
+          "functions": ["testConnection", "testPublish", "testSubscribe", "testErrorScenarios", "testReconnection", "runAllTests"],
+          "classes": [],
+          "constants": ["TEST_CONFIG"]
+        },
+        "imports": ["mqtt", "../src/mqttClient"],
+        "sideEffects": ["console output", "MQTT broker connections"]
+      }
+    },
+    "dependencies": {
+      "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+      "mqtt": "MQTT client library for Node.js enabling broker communication",
+      "typescript": "TypeScript compiler for type-safe JavaScript development",
+      "@types/node": "Node.js type definitions for TypeScript compatibility"
+    },
+    "architecture": {
+      "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
+      "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient -> NoteCreator -> Obsidian Notes",
+      "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
+      "key_components": "MQTTClient (broker communication), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
+      "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)",
+      "testing": "Comprehensive MQTT connectivity test suite validates all client functionality including connection, publish, subscribe, error handling, and reconnection logic"
+    },
+    "development": {
+      "approach": "manifest-driven development with git workflow integration",
+      "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
+      "task_status": "Task-2.2 completed - MQTT connectivity thoroughly tested",
+      "current_phase": "Phase 2: Core MQTT Functionality",
+      "manifest_evolution": "tracked in docs/manifest_evolution.md",
+      "version_control": "git commits tied to task completion",
+      "testing_status": "MQTT client validated against live broker with all scenarios tested"
+    }
+  },
+  "implementation_notes": {
+    "approach": "Create comprehensive test suite that validates all MQTT client functionality using a real MQTT broker (public test broker or local mosquitto). Tests will be structured to run independently and provide clear pass/fail results with detailed logging.",
+    "files_to_create": [
+      {
+        "file": "tests/mqtt-test.js",
+        "purpose": "Complete MQTT connectivity test suite covering all functionality and error scenarios",
+        "key_exports": ["testConnection", "testPublish", "testSubscribe", "testErrorScenarios", "testReconnection", "runAllTests"]
+      }
+    ],
+    "files_to_modify": [
+      {
+        "file": "package.json",
+        "changes": "Add test script to run MQTT connectivity tests"
+      }
+    ],
+    "dependencies": [],
+    "integration_points": [
+      "Uses existing MQTTClient class from src/mqttClient.ts",
+      "Connects to real MQTT broker for live testing",
+      "Validates all connection scenarios including failures",
+      "Tests both publish and subscribe functionality",
+      "Validates reconnection logic under various failure conditions"
+    ],
+    "testing_approach": "Comprehensive test suite that validates: 1) Basic connection to MQTT broker, 2) Successful message publishing with confirmation, 3) Topic subscription and message receiving, 4) Error handling for invalid broker URLs, authentication failures, and network issues, 5) Reconnection logic during network interruptions, 6) Proper cleanup and disconnection. Each test provides clear console output and returns pass/fail results.",
+    "broker_setup": "Test will use eclipse-mosquitto public test broker (test.mosquitto.org:1883) for reliability, with fallback instructions for local broker setup using Docker or native installation",
+    "test_scenarios": [
+      "Connection success with valid broker",
+      "Connection failure with invalid broker URL",
+      "Authentication failure with wrong credentials",
+      "Network timeout scenarios",
+      "Publish message success with QoS levels",
+      "Subscribe to topic and receive messages",
+      "Reconnection after network interruption",
+      "Proper cleanup and resource management"
+    ]
+  },
+  "acceptance_criteria": [
+    "Can connect to real MQTT broker successfully",
+    "Messages publish successfully with confirmation",
+    "Topic subscriptions receive messages correctly",
+    "Error handling works for all failure scenarios",
+    "Reconnection logic activates during network issues",
+    "All tests provide clear pass/fail results",
+    "Test suite can be run independently via npm script",
+    "Comprehensive logging shows all test activities"
+  ],
+  "estimated_complexity": "Medium",
+  "prerequisites": [
+    "Task-2.1 completed (MQTTClient implementation)"
+  ]
+}
