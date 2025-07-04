@@ -74,6 +74,53 @@ During implementation of Tasks 2.1-2.2, several architectural improvements emerg
 - **Flexibility**: Wildcard support enables more sophisticated subscription patterns
 - **Documentation**: Detailed API documentation with implementation examples
 
+## Manifest Update v1.2 - 2025-07-04
+
+### Trigger
+Completion of Phase 3: Note Publishing (Tasks 3.1-3.3) with comprehensive outgoing note publishing functionality including auto-publishing capabilities.
+
+### Key Changes
+- **Complete Note Publisher Implementation**: Full NotePublisher class with frontmatter parsing, topic generation, and payload creation
+- **Auto-Publishing System**: File modification event listeners with intelligent debouncing to prevent spam publishing
+- **Enhanced Main Plugin Class**: Extended MQTTNotePlugin with comprehensive lifecycle management and event handling
+- **Manual Publishing Integration**: Command palette integration with user feedback systems
+- **Debouncing Architecture**: Map-based debounce tracking with per-file timeout management
+- **Resource Management**: Proper cleanup of event listeners and debounce timers on plugin unload
+
+### Reason for Changes
+Phase 3 implementation revealed the need for sophisticated auto-publishing mechanisms and comprehensive lifecycle management:
+
+1. **Debouncing System**: File modification events fire rapidly during editing, requiring intelligent debouncing to prevent MQTT spam
+2. **Event Management**: Proper setup and cleanup of file modification listeners is crucial for plugin stability
+3. **User Experience**: Manual publishing commands need comprehensive feedback systems with success/error notifications
+4. **Resource Efficiency**: Auto-publishing must be resource-efficient with no memory leaks from uncleaned timers
+
+### Implementation Discoveries
+- **File Modification Events**: Obsidian's vault.on('modify') events require careful handling to avoid performance issues
+- **Frontmatter Parsing**: Custom YAML parsing is needed to avoid heavy dependencies while maintaining reliability
+- **Topic Sanitization**: MQTT topic generation requires careful character sanitization for compliance
+- **Error Handling**: Auto-publishing should fail silently to avoid notification spam while logging errors
+
+### Impact Assessment
+- **Existing Tasks**: No breaking changes; enhanced foundation for Phase 4 (MQTT → Obsidian)
+- **Architecture**: Complete outgoing data flow with both manual and automatic publishing paths
+- **Performance**: Debouncing system ensures efficient MQTT usage without spam
+- **User Experience**: Seamless integration with Obsidian workflow including command palette
+
+### Quality Improvements
+- **Auto-Publishing**: Intelligent debouncing prevents MQTT broker spam
+- **Resource Management**: Proper cleanup prevents memory leaks and performance degradation
+- **Error Resilience**: Graceful handling of MQTT disconnections and parsing errors
+- **User Feedback**: Comprehensive notification system for publishing operations
+- **Code Organization**: Clear separation between manual and automatic publishing workflows
+
+### Lessons Learned
+- **Debouncing Strategy**: Per-file debouncing with Map tracking is more efficient than global debouncing
+- **Event Listener Cleanup**: Critical to prevent memory leaks and plugin conflicts
+- **Auto-Publish Logic**: Should respect user settings and fail gracefully without user disruption
+- **MQTT Integration**: Connection status checks prevent unnecessary error scenarios
+- **Frontmatter Handling**: Custom parsing provides better control than external YAML dependencies
+
 ## Template for Future Entries
 
 ### Version X.X - [Date]

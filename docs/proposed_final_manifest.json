@@ -1,6 +1,6 @@
 {
-  "version": "1.1",
-  "generated": "2025-07-04T03:00:00Z",
+  "version": "1.2",
+  "generated": "2025-07-04T04:00:00Z",
   "project": {
     "name": "MQTT Note - Obsidian Plugin",
     "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
@@ -18,26 +18,65 @@
   },
   "files": {
     "main.ts": {
-      "purpose": "Main plugin entry point, handles Obsidian plugin lifecycle and orchestrates all components",
+      "purpose": "Main plugin entry point with complete lifecycle management, command registration, and auto-publishing functionality",
       "exports": {
         "functions": [],
         "classes": [
           {
             "name": "MQTTNotePlugin",
-            "description": "Main plugin class that extends Obsidian Plugin and manages MQTT note functionality",
+            "description": "Main plugin class that extends Obsidian Plugin and manages complete MQTT note functionality with manual and automatic publishing",
             "constructor": "MQTTNotePlugin(app: App, manifest: PluginManifest)",
             "methods": [
               {
                 "name": "onload",
                 "signature": "onload() -> Promise<void>",
-                "description": "Initializes plugin: loads settings, connects MQTT client, sets up publishers/creators, registers commands",
+                "description": "Initializes plugin: loads settings, connects MQTT client, sets up publishers/creators, registers commands, sets up event listeners",
                 "parameters": {},
                 "returns": "Promise that resolves when plugin is fully loaded"
               },
               {
                 "name": "onunload",
                 "signature": "onunload() -> void",
-                "description": "Cleanup plugin resources: disconnects MQTT client, removes event listeners",
+                "description": "Cleanup plugin resources: disconnects MQTT client, removes event listeners, clears debounce timers",
+                "parameters": {},
+                "returns": "void"
+              },
+              {
+                "name": "publishCurrentNote",
+                "signature": "publishCurrentNote() -> Promise<void>",
+                "description": "Manual publish command for current active note with user feedback",
+                "parameters": {},
+                "returns": "Promise that resolves when publish attempt completes"
+              },
+              {
+                "name": "toggleMqttConnection",
+                "signature": "toggleMqttConnection() -> Promise<void>",
+                "description": "Toggle MQTT connection state with user feedback",
+                "parameters": {},
+                "returns": "Promise that resolves when connection toggle completes"
+              },
+              {
+                "name": "handleAutoPublish",
+                "signature": "handleAutoPublish(file: TFile) -> Promise<void>",
+                "description": "Auto-publish handler for file modification events with settings validation",
+                "parameters": {
+                  "file": "Obsidian TFile object that was modified"
+                },
+                "returns": "Promise that resolves when auto-publish attempt completes"
+              },
+              {
+                "name": "handleAutoPublishWithDebounce",
+                "signature": "handleAutoPublishWithDebounce(file: TFile) -> void",
+                "description": "Debounced auto-publish handler that prevents spam publishing on rapid file modifications",
+                "parameters": {
+                  "file": "Obsidian TFile object that was modified"
+                },
+                "returns": "void"
+              },
+              {
+                "name": "setupEventListeners",
+                "signature": "setupEventListeners() -> void",
+                "description": "Sets up file modification event listeners for auto-publishing functionality",
                 "parameters": {},
                 "returns": "void"
               }
@@ -62,6 +101,11 @@
                 "name": "noteCreator",
                 "type": "NoteCreator",
                 "description": "Creates/updates notes from MQTT messages"
+              },
+              {
+                "name": "autoPublishDebounceMap",
+                "type": "Map<string, NodeJS.Timeout>",
+                "description": "Map tracking debounce timers for auto-publishing by file path"
               }
             ]
           }
@@ -69,7 +113,7 @@
         "constants": []
       },
       "imports": ["obsidian", "./settings", "./mqttClient", "./notePublisher", "./noteCreator", "./types"],
-      "sideEffects": ["registers-commands", "loads-settings", "connects-mqtt", "registers-events"]
+      "sideEffects": ["registers-commands", "loads-settings", "connects-mqtt", "registers-events", "file-modification-listeners", "auto-publishing"]
     },
     "settings.ts": {
       "purpose": "Plugin settings management, UI, and persistence",
@@ -480,12 +524,12 @@
   "development": {
     "approach": "manifest-driven development with git workflow integration and comprehensive testing",
     "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
-    "task_status": "Phase 2 completed - MQTT connectivity validated, ready for Phase 3 (Note Publishing)",
-    "current_phase": "Phase 2 complete: Core MQTT Functionality with EventEmitter pattern and comprehensive testing",
-    "completed_tasks": ["Task-1.1", "Task-1.2", "Task-1.3", "Task-2.1", "Task-2.2"],
-    "next_phase": "Phase 3: Note Publishing (Obsidian → MQTT)",
-    "manifest_evolution": "tracked in docs/manifest_evolution.md with Phase 2 architectural learnings",
+    "task_status": "Phase 3 completed - Note Publishing functionality fully implemented with manual and automatic publishing",
+    "current_phase": "Phase 3 complete: Note Publishing (Obsidian → MQTT) with comprehensive auto-publish system",
+    "completed_tasks": ["Task-1.1", "Task-1.2", "Task-1.3", "Task-2.1", "Task-2.2", "Task-3.1", "Task-3.2", "Task-3.3"],
+    "next_phase": "Phase 4: Note Creation (MQTT → Obsidian)",
+    "manifest_evolution": "tracked in docs/manifest_evolution.md with Phase 3 architectural learnings and auto-publish implementation",
     "version_control": "git commits tied to task completion with clean history",
-    "testing_status": "MQTT client fully validated with live broker testing and error scenario coverage"
+    "testing_status": "MQTT client and note publishing fully validated with live broker testing and comprehensive error handling"
   }
 }
