@@ -1,6 +1,6 @@
 {
-  "version": "1.0",
-  "generated": "2025-07-03T16:00:00Z",
+  "version": "1.1",
+  "generated": "2025-07-04T03:00:00Z",
   "project": {
     "name": "MQTT Note - Obsidian Plugin",
     "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
@@ -111,23 +111,22 @@
       "sideEffects": ["creates-settings-ui", "saves-settings", "loads-settings"]
     },
     "mqttClient.ts": {
-      "purpose": "MQTT broker connection management and message handling",
+      "purpose": "MQTT broker connection management and message handling with EventEmitter pattern",
       "exports": {
         "functions": [],
         "classes": [
           {
             "name": "MQTTClient",
-            "description": "Manages MQTT broker connection, publishing, and subscription with error handling and reconnection logic",
+            "description": "EventEmitter-based MQTT client managing connection, publishing, and subscription with advanced error handling and reconnection logic",
             "constructor": "MQTTClient()",
+            "extends": "EventEmitter",
             "methods": [
               {
                 "name": "connect",
-                "signature": "connect(brokerUrl: string, username: string, password: string) -> Promise<void>",
-                "description": "Establishes connection to MQTT broker with authentication and retry logic",
+                "signature": "connect(settings: MQTTNoteSettings) -> Promise<void>",
+                "description": "Establishes connection to MQTT broker with settings object and exponential backoff retry logic",
                 "parameters": {
-                  "brokerUrl": "MQTT broker URL (e.g., mqtt://192.168.1.100:1883)",
-                  "username": "MQTT broker username (optional)",
-                  "password": "MQTT broker password (optional)"
+                  "settings": "MQTTNoteSettings object containing brokerUrl, username, password"
                 },
                 "returns": "Promise that resolves when connection is established"
               },
@@ -140,21 +139,21 @@
               },
               {
                 "name": "publish",
-                "signature": "publish(topic: string, payload: string) -> Promise<void>",
-                "description": "Publishes message to specified MQTT topic with error handling",
+                "signature": "publish(topic: string, payload: string | Record<string, any>) -> Promise<void>",
+                "description": "Publishes message to specified MQTT topic with JSON serialization and error handling",
                 "parameters": {
                   "topic": "MQTT topic to publish to",
-                  "payload": "Message payload as string (typically JSON)"
+                  "payload": "Message payload as string or object (auto-serialized to JSON)"
                 },
                 "returns": "Promise that resolves when message is published"
               },
               {
                 "name": "subscribe",
-                "signature": "subscribe(topic: string, callback: (topic: string, payload: string) -> void) -> Promise<void>",
-                "description": "Subscribes to MQTT topic with message callback handler",
+                "signature": "subscribe(topic: string, callback: (message: MQTTMessage) => void) -> Promise<void>",
+                "description": "Subscribes to MQTT topic with wildcard support and message callback handler",
                 "parameters": {
-                  "topic": "MQTT topic pattern to subscribe to (supports wildcards)",
-                  "callback": "Function called when messages are received"
+                  "topic": "MQTT topic pattern to subscribe to (supports + and # wildcards)",
+                  "callback": "Function called when messages are received with MQTTMessage object"
                 },
                 "returns": "Promise that resolves when subscription is active"
               },
@@ -166,24 +165,59 @@
                 "returns": "true if connected to broker, false otherwise"
               }
             ],
+            "private_methods": [
+              {
+                "name": "parsePayload",
+                "description": "JSON parsing with graceful fallback to string"
+              },
+              {
+                "name": "topicMatches",
+                "description": "MQTT topic wildcard matching for + and # patterns"
+              },
+              {
+                "name": "scheduleReconnect",
+                "description": "Exponential backoff reconnection with max attempts"
+              }
+            ],
+            "events": [
+              "connected - emitted when connection is established",
+              "disconnected - emitted when connection is lost",
+              "error - emitted when errors occur",
+              "message - emitted when messages are received"
+            ],
             "properties": [
               {
                 "name": "client",
-                "type": "mqtt.MqttClient",
+                "type": "mqtt.MqttClient | null",
                 "description": "Internal MQTT client instance"
               },
               {
-                "name": "connectionStatus",
-                "type": "boolean",
-                "description": "Current connection status"
+                "name": "settings",
+                "type": "MQTTNoteSettings | null",
+                "description": "Current connection settings"
+              },
+              {
+                "name": "reconnectAttempts",
+                "type": "number",
+                "description": "Current reconnection attempt count"
+              },
+              {
+                "name": "maxReconnectAttempts",
+                "type": "number",
+                "description": "Maximum reconnection attempts before giving up"
+              },
+              {
+                "name": "reconnectDelay",
+                "type": "number",
+                "description": "Current reconnection delay in milliseconds"
               }
             ]
           }
         ],
         "constants": []
       },
-      "imports": ["mqtt"],
-      "sideEffects": ["network-connections", "mqtt-subscriptions", "mqtt-publications"]
+      "imports": ["mqtt", "./types", "events"],
+      "sideEffects": ["network-connections", "mqtt-subscriptions", "mqtt-publications", "event-emission"]
     },
     "notePublisher.ts": {
       "purpose": "Handles publishing Obsidian notes to MQTT topics based on frontmatter configuration",
@@ -354,7 +388,21 @@
       "sideEffects": []
     },
     "package.json": {
-      "purpose": "Node.js package configuration with dependencies and build scripts",
+      "purpose": "Node.js package configuration with dependencies, build scripts, and test commands",
+      "exports": {
+        "functions": [],
+        "classes": [],
+        "constants": []
+      },
+      "imports": [],
+      "sideEffects": [],
+      "scripts": {
+        "test": "node tests/mqtt-test.js",
+        "test:mqtt": "node tests/mqtt-test.js"
+      }
+    },
+    "tests/": {
+      "purpose": "Test directory for MQTT connectivity and functionality validation",
       "exports": {
         "functions": [],
         "classes": [],
@@ -362,6 +410,54 @@
       },
       "imports": [],
       "sideEffects": []
+    },
+    "tests/mqtt-test.js": {
+      "purpose": "Comprehensive MQTT connectivity test suite covering all client functionality and error scenarios",
+      "exports": {
+        "functions": [
+          {
+            "name": "testConnection",
+            "signature": "testConnection() -> Promise<boolean>",
+            "description": "Tests basic MQTT broker connection using test.mosquitto.org"
+          },
+          {
+            "name": "testPublish",
+            "signature": "testPublish() -> Promise<boolean>",
+            "description": "Tests message publishing functionality with JSON payloads"
+          },
+          {
+            "name": "testSubscribe",
+            "signature": "testSubscribe() -> Promise<boolean>",
+            "description": "Tests topic subscription and message receiving with callback handling"
+          },
+          {
+            "name": "testErrorScenarios",
+            "signature": "testErrorScenarios() -> Promise<boolean>",
+            "description": "Tests error handling with invalid broker URLs and connection failures"
+          },
+          {
+            "name": "testReconnection",
+            "signature": "testReconnection() -> Promise<boolean>",
+            "description": "Tests automatic reconnection logic after network interruptions"
+          },
+          {
+            "name": "runAllTests",
+            "signature": "runAllTests() -> Promise<boolean>",
+            "description": "Orchestrates all test scenarios with comprehensive reporting and cleanup"
+          }
+        ],
+        "classes": [],
+        "constants": [
+          {
+            "name": "TEST_CONFIG",
+            "type": "object",
+            "value": "Test configuration with broker URL, topics, and timeouts",
+            "description": "Centralized configuration for all MQTT connectivity tests"
+          }
+        ]
+      },
+      "imports": ["../mqttClient"],
+      "sideEffects": ["console-output", "mqtt-connections", "test-reporting"]
     }
   },
   "dependencies": {
@@ -371,16 +467,25 @@
     "@types/node": "Node.js type definitions for TypeScript compatibility"
   },
   "architecture": {
-    "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
-    "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient -> NoteCreator -> Obsidian Notes",
+    "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes EventEmitter-based MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
+    "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient (with wildcard support) -> NoteCreator -> Obsidian Notes",
     "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
-    "key_components": "MQTTClient (broker communication), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
-    "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)"
+    "key_components": "MQTTClient (EventEmitter-based broker communication with reconnection), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
+    "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)",
+    "testing": "Comprehensive test suite validates all MQTT functionality including connection, publish, subscribe, error handling, and reconnection scenarios",
+    "event_system": "MQTTClient extends EventEmitter for async communication with events: connected, disconnected, error, message",
+    "error_handling": "Multi-layered error handling with exponential backoff reconnection, graceful fallbacks, and comprehensive error reporting",
+    "quality_assurance": "Live testing against real MQTT brokers with automated test suite covering all functional and error scenarios"
   },
   "development": {
-    "approach": "manifest-driven development with task-by-task implementation",
-    "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed)",
-    "task_status": "ready for implementation - see tasks/task-list.md",
-    "current_phase": "planned - ready for bootstrap and implementation"
+    "approach": "manifest-driven development with git workflow integration and comprehensive testing",
+    "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
+    "task_status": "Phase 2 completed - MQTT connectivity validated, ready for Phase 3 (Note Publishing)",
+    "current_phase": "Phase 2 complete: Core MQTT Functionality with EventEmitter pattern and comprehensive testing",
+    "completed_tasks": ["Task-1.1", "Task-1.2", "Task-1.3", "Task-2.1", "Task-2.2"],
+    "next_phase": "Phase 3: Note Publishing (Obsidian → MQTT)",
+    "manifest_evolution": "tracked in docs/manifest_evolution.md with Phase 2 architectural learnings",
+    "version_control": "git commits tied to task completion with clean history",
+    "testing_status": "MQTT client fully validated with live broker testing and error scenario coverage"
   }
 }
