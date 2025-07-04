@@ -1,0 +1,322 @@
+{
+  "task_id": "Task-1.3",
+  "task_description": "Implement Settings System - Create settings.ts file with DEFAULT_SETTINGS object, MQTTNoteSettingTab class, settings UI with form inputs, validation, and save/load functionality",
+  "current_manifest": {
+    "version": "1.0",
+    "generated": "2025-07-04T00:00:00Z",
+    "project": {
+      "name": "MQTT Note - Obsidian Plugin",
+      "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+      "version": "0.1.0",
+      "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+      "deployment": "Obsidian plugin installation via community plugins or manual installation",
+      "repository": "To be configured after project setup"
+    },
+    "documentation": {
+      "mvp": "docs/mvp.md",
+      "task_list": "tasks/task_list.md",
+      "proposed_final_manifest": "docs/proposed_final_manifest.json",
+      "manifest_evolution": "docs/manifest_evolution.md",
+      "architecture_notes": "Two-way communication system: Notes with mqtt:true frontmatter publish to MQTT topics, incoming MQTT messages create/update notes in specified folder"
+    },
+    "files": {
+      "package.json": {
+        "purpose": "Node.js package configuration with dependencies and build scripts",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "tsconfig.json": {
+        "purpose": "TypeScript compiler configuration for Obsidian plugin development",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "manifest.json": {
+        "purpose": "Obsidian plugin manifest with metadata and permissions",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/": {
+        "purpose": "Source code directory for TypeScript implementation files",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/types.ts": {
+        "purpose": "Core type definitions for plugin settings, MQTT messages, and publishing modes",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": ["MQTTNoteSettings", "MQTTMessage", "PublishMode"]
+        },
+        "imports": [],
+        "sideEffects": []
+      }
+    },
+    "dependencies": {
+      "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+      "mqtt": "MQTT client library for Node.js enabling broker communication",
+      "typescript": "TypeScript compiler for type-safe JavaScript development",
+      "@types/node": "Node.js type definitions for TypeScript compatibility"
+    },
+    "architecture": {
+      "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
+      "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient -> NoteCreator -> Obsidian Notes",
+      "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
+      "key_components": "MQTTClient (broker communication), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
+      "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)"
+    },
+    "development": {
+      "approach": "manifest-driven development with git workflow integration",
+      "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
+      "task_status": "Task-1.2 completed - core type definitions created",
+      "current_phase": "Phase 1: Project Setup & Infrastructure",
+      "manifest_evolution": "tracked in docs/manifest_evolution.md",
+      "version_control": "git commits tied to task completion"
+    }
+  },
+  "expected_manifest": {
+    "version": "1.0",
+    "generated": "2025-07-04T01:00:00Z",
+    "project": {
+      "name": "MQTT Note - Obsidian Plugin",
+      "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+      "version": "0.1.0",
+      "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+      "deployment": "Obsidian plugin installation via community plugins or manual installation",
+      "repository": "To be configured after project setup"
+    },
+    "documentation": {
+      "mvp": "docs/mvp.md",
+      "task_list": "tasks/task_list.md",
+      "proposed_final_manifest": "docs/proposed_final_manifest.json",
+      "manifest_evolution": "docs/manifest_evolution.md",
+      "architecture_notes": "Two-way communication system: Notes with mqtt:true frontmatter publish to MQTT topics, incoming MQTT messages create/update notes in specified folder"
+    },
+    "files": {
+      "package.json": {
+        "purpose": "Node.js package configuration with dependencies and build scripts",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "tsconfig.json": {
+        "purpose": "TypeScript compiler configuration for Obsidian plugin development",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "manifest.json": {
+        "purpose": "Obsidian plugin manifest with metadata and permissions",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/": {
+        "purpose": "Source code directory for TypeScript implementation files",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/types.ts": {
+        "purpose": "Core type definitions for plugin settings, MQTT messages, and publishing modes",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": ["MQTTNoteSettings", "MQTTMessage", "PublishMode"]
+        },
+        "imports": [],
+        "sideEffects": []
+      },
+      "src/settings.ts": {
+        "purpose": "Settings management with default values, UI tab class, and validation logic",
+        "exports": {
+          "functions": [],
+          "classes": ["MQTTNoteSettingTab"],
+          "constants": ["DEFAULT_SETTINGS"]
+        },
+        "imports": ["obsidian", "./types"],
+        "sideEffects": []
+      }
+    },
+    "dependencies": {
+      "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+      "mqtt": "MQTT client library for Node.js enabling broker communication",
+      "typescript": "TypeScript compiler for type-safe JavaScript development",
+      "@types/node": "Node.js type definitions for TypeScript compatibility"
+    },
+    "architecture": {
+      "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
+      "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient -> NoteCreator -> Obsidian Notes",
+      "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
+      "key_components": "MQTTClient (broker communication), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
+      "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)"
+    },
+    "development": {
+      "approach": "manifest-driven development with git workflow integration",
+      "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
+      "task_status": "Task-1.3 completed - settings system implemented",
+      "current_phase": "Phase 1: Project Setup & Infrastructure",
+      "manifest_evolution": "tracked in docs/manifest_evolution.md",
+      "version_control": "git commits tied to task completion"
+    }
+  },
+  "implementation_notes": {
+    "approach": "Create a comprehensive settings system with default values, Obsidian UI integration, and validation. The settings will provide a user-friendly interface for all MQTT configuration options defined in the MVP requirements.",
+    "files_to_create": [
+      {
+        "file": "src/settings.ts",
+        "purpose": "Complete settings management system with defaults, UI, and validation",
+        "key_exports": [
+          "DEFAULT_SETTINGS constant - default configuration values matching MQTTNoteSettings interface",
+          "MQTTNoteSettingTab class - Obsidian settings UI extending PluginSettingTab"
+        ]
+      }
+    ],
+    "files_to_modify": [],
+    "dependencies": [],
+    "integration_points": [
+      "Import MQTTNoteSettings interface from src/types.ts",
+      "Extend Obsidian's PluginSettingTab class",
+      "Will be imported and used by main plugin class in Task-5.1",
+      "Settings will be consumed by MQTT client in Task-2.1"
+    ],
+    "testing_approach": "Verify TypeScript compilation, test UI rendering in Obsidian settings, validate form inputs, test save/load persistence"
+  },
+  "ui_requirements": {
+    "settings_sections": {
+      "mqtt_connection": {
+        "label": "MQTT Broker Connection",
+        "fields": [
+          {
+            "key": "brokerUrl",
+            "label": "Broker URL",
+            "type": "text",
+            "placeholder": "mqtt://192.168.1.100:1883",
+            "validation": "URL format validation"
+          },
+          {
+            "key": "username",
+            "label": "Username",
+            "type": "text",
+            "placeholder": "Leave empty if no authentication required"
+          },
+          {
+            "key": "password",
+            "label": "Password",
+            "type": "password",
+            "placeholder": "Leave empty if no authentication required"
+          }
+        ]
+      },
+      "publishing_mode": {
+        "label": "Publishing Mode",
+        "fields": [
+          {
+            "key": "automaticPublishOnSave",
+            "label": "Automatic publishing on save",
+            "type": "toggle",
+            "description": "Automatically publish notes when saved"
+          }
+        ]
+      },
+      "topic_configuration": {
+        "label": "Topic Configuration", 
+        "fields": [
+          {
+            "key": "outgoingPrefix",
+            "label": "Outgoing Prefix",
+            "type": "text",
+            "placeholder": "obsidian/",
+            "description": "Prefix for outgoing topic names"
+          },
+          {
+            "key": "incomingTopic",
+            "label": "Incoming Topic",
+            "type": "text",
+            "placeholder": "homeassistant/#",
+            "description": "Topic pattern to subscribe to"
+          }
+        ]
+      },
+      "file_management": {
+        "label": "File Management",
+        "fields": [
+          {
+            "key": "incomingNoteFolder",
+            "label": "Incoming Note Folder",
+            "type": "text",
+            "placeholder": "MQTT-Inbox/",
+            "description": "Folder for incoming MQTT notes"
+          }
+        ]
+      }
+    }
+  },
+  "default_settings": {
+    "brokerUrl": "",
+    "username": "",
+    "password": "",
+    "automaticPublishOnSave": false,
+    "outgoingPrefix": "obsidian/",
+    "incomingTopic": "homeassistant/#",
+    "incomingNoteFolder": "MQTT-Inbox/"
+  },
+  "validation_rules": {
+    "brokerUrl": "Must be valid URL format, required field",
+    "username": "Optional string",
+    "password": "Optional string", 
+    "automaticPublishOnSave": "Boolean value",
+    "outgoingPrefix": "Non-empty string, should end with /",
+    "incomingTopic": "Non-empty string, MQTT topic pattern",
+    "incomingNoteFolder": "Non-empty string, valid folder path"
+  },
+  "acceptance_criteria": [
+    "src/settings.ts file created with DEFAULT_SETTINGS and MQTTNoteSettingTab",
+    "Settings UI appears in Obsidian settings with all required form fields",
+    "All settings save and load correctly using Obsidian's data persistence",
+    "Input validation works properly with appropriate error messages",
+    "UI matches planned configuration options from MVP",
+    "DEFAULT_SETTINGS matches MQTTNoteSettings interface exactly",
+    "TypeScript compilation passes without errors",
+    "Settings tab integrates properly with Obsidian plugin system"
+  ],
+  "estimated_complexity": "Medium",
+  "prerequisites": [
+    "Task-1.2 must be completed (MQTTNoteSettings interface available)"
+  ]
+}
