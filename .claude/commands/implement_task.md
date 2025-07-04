@@ -7,6 +7,8 @@ claude-code "Implement a prepared task with full context using manifest-driven d
 
 **Task File:** [PATH_TO_TASK_FILE - e.g., tasks/prepared/Task-1.1.json]
 
+Start your response with: "⚙️ **IMPLEMENT_TASK EXECUTING** - Implementing [TASK_FILE]"
+
 ## Implementation Process:
 
 ### 1. Load Task Context

@@ -7,6 +7,8 @@ claude-code "Commit completed task implementation with proper git history.
 
 **Task ID:** [TASK_ID - e.g., Task-1.1]
 
+Start your response with: "💾 **COMMIT_TASK EXECUTING** - Committing [TASK_ID] implementation"
+
 ## Commit Process:
 
 ### 1. Verify Task Completion

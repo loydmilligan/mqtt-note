@@ -7,6 +7,8 @@ claude-code "Process and prepare a task for implementation using manifest-driven
 
 **Task ID:** [TASK_ID - e.g., Task-1.1]
 
+Start your response with: "🔄 **PROCESS_TASK EXECUTING** - Processing [TASK_ID] for implementation"
+
 ## Process Steps:
 
 ### 1. Read Current State

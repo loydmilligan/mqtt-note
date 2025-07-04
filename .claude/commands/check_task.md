@@ -7,6 +7,8 @@ claude-code "Verify task implementation matches expected changes using manifest 
 
 **Task ID:** [TASK_ID - e.g., Task-1.1]
 
+Start your response with: "✅ **CHECK_TASK EXECUTING** - Validating [TASK_ID] implementation"
+
 ## Validation Process:
 
 ### 1. Load Task Context

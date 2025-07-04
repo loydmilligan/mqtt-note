@@ -7,6 +7,8 @@ claude-code "Update the proposed final manifest based on implementation learning
 
 **Trigger:** [After major milestone/phase completion, significant architectural changes, or periodic review]
 
+Start your response with: "📝 **UPDATE_FINAL_MANIFEST EXECUTING** - Updating proposed final manifest"
+
 ## Update Process:
 
 ### 1. Analyze Implementation Learnings

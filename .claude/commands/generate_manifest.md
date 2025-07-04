@@ -7,6 +7,8 @@ claude-code "Please analyze the current codebase and generate a comprehensive ma
 
 Create a manifest file that maps the current state of the codebase. Scan all files and analyze their structure to create an accurate representation.
 
+Start your response with: "🔍 **GENERATE_MANIFEST EXECUTING** - Analyzing current codebase and creating manifest"
+
 ## Manifest Format Required:
 
 ```json

@@ -7,6 +7,8 @@ claude-code "Resolve discrepancies between expected and actual implementation in
 
 **Task ID:** [TASK_ID - e.g., Task-1.1]
 
+Start your response with: "🚨 **RESOLVE_MISMATCH EXECUTING** - Resolving [TASK_ID] discrepancies"
+
 ## Resolution Process:
 
 ### 1. Load Mismatch Context
