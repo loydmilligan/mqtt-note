@@ -24,3 +24,6 @@ npm-debug.log*
 # Task working files
 tasks/prepared/  # Temporary task files with full context
 !tasks/prepared/.gitkeep  # Keep directory structure
+
+# Bundled distribution files
+main.js.map

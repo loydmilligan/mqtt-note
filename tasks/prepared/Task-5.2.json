@@ -1,0 +1,164 @@
+{
+  "task_id": "Task-5.2",
+  "task_description": "Setup Distribution Build - Configure bundling system (esbuild for dependency bundling), bundle MQTT dependency into main.js distribution file, update build scripts in package.json for distribution, test plugin installation without node_modules, validate bundled plugin loads correctly in Obsidian, and update .gitignore to exclude bundled artifacts if needed.",
+  "current_manifest": {
+    "version": "1.0",
+    "generated": "2025-07-04T02:00:00Z",
+    "project": {
+      "name": "MQTT Note - Obsidian Plugin",
+      "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+      "version": "0.1.0",
+      "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+      "deployment": "Obsidian plugin installation via community plugins or manual installation"
+    },
+    "dependencies": {
+      "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+      "mqtt": "MQTT client library for Node.js enabling broker communication",
+      "typescript": "TypeScript compiler for type-safe JavaScript development",
+      "@types/node": "Node.js type definitions for TypeScript compatibility"
+    },
+    "build_system": {
+      "compiler": "TypeScript (tsc)",
+      "build_script": "tsc -p .",
+      "dev_script": "tsc -p . --watch",
+      "output": "JavaScript files in root directory",
+      "bundling": "none - dependencies not bundled"
+    }
+  },
+  "expected_manifest": {
+    "version": "1.0",
+    "generated": "2025-07-05T00:00:00Z",
+    "project": {
+      "name": "MQTT Note - Obsidian Plugin",
+      "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
+      "version": "0.1.0",
+      "tech_stack": "TypeScript, Node.js, Obsidian Plugin API, MQTT",
+      "deployment": "Obsidian plugin installation via community plugins or manual installation - vault-sync safe"
+    },
+    "dependencies": {
+      "obsidian": "Obsidian Plugin API for interacting with notes, settings, and UI",
+      "mqtt": "MQTT client library for Node.js enabling broker communication (bundled)",
+      "typescript": "TypeScript compiler for type-safe JavaScript development",
+      "@types/node": "Node.js type definitions for TypeScript compatibility",
+      "esbuild": "Fast bundler for JavaScript/TypeScript with dependency bundling"
+    },
+    "build_system": {
+      "compiler": "TypeScript (tsc) + esbuild bundler",
+      "build_script": "tsc -p . (development)",
+      "build_dist_script": "esbuild src/main.ts --bundle --outfile=main.js --format=cjs --platform=node --external:obsidian",
+      "dev_script": "tsc -p . --watch",
+      "output": "Bundled main.js with embedded dependencies",
+      "bundling": "esbuild - MQTT dependency bundled, obsidian external",
+      "distribution": "main.js + manifest.json only (no node_modules required)"
+    },
+    "files": {
+      "package.json": {
+        "purpose": "Node.js package configuration with dependencies, build scripts, and distribution build commands",
+        "exports": {
+          "functions": [],
+          "classes": [],
+          "constants": []
+        },
+        "scripts": {
+          "build": "tsc -p .",
+          "build:dist": "esbuild src/main.ts --bundle --outfile=main.js --format=cjs --platform=node --external:obsidian",
+          "dev": "tsc -p . --watch",
+          "lint": "eslint src/ --ext .ts",
+          "test": "node tests/mqtt-test.js",
+          "test:mqtt": "node tests/mqtt-test.js"
+        }
+      },
+      ".gitignore": {
+        "purpose": "Git ignore patterns including bundled artifacts",
+        "additional_patterns": [
+          "# Bundled distribution files",
+          "main.js.map"
+        ]
+      }
+    }
+  },
+  "implementation_notes": {
+    "approach": "Configure esbuild for dependency bundling while keeping development workflow intact. Add distribution build script that bundles MQTT dependency into main.js while keeping obsidian external (provided by Obsidian runtime).",
+    "files_to_create": [],
+    "files_to_modify": [
+      {
+        "file": "package.json",
+        "changes": "Add esbuild dev dependency and build:dist script for distribution builds"
+      },
+      {
+        "file": ".gitignore", 
+        "changes": "Add patterns to ignore bundled artifacts like main.js.map if generated"
+      }
+    ],
+    "dependencies": ["esbuild"],
+    "integration_points": [
+      "esbuild configuration for Obsidian plugin bundling",
+      "MQTT library bundling while keeping obsidian external",
+      "Distribution build process that creates vault-installable files",
+      "Development workflow preservation (tsc for development, esbuild for distribution)"
+    ],
+    "testing_approach": "Build distribution version, test installation in Obsidian vault without node_modules, validate MQTT functionality works with bundled dependencies",
+    "bundling_strategy": {
+      "target": "node16",
+      "format": "cjs",
+      "platform": "node", 
+      "external": ["obsidian"],
+      "bundle": ["mqtt"],
+      "outfile": "main.js",
+      "sourcemap": false,
+      "minify": false
+    }
+  },
+  "acceptance_criteria": [
+    "Plugin works in Obsidian with only main.js and manifest.json files",
+    "No node_modules directory required in vault installation",
+    "MQTT functionality works correctly with bundled dependencies",
+    "Build process is repeatable with npm run build:dist command",
+    "Distribution package is vault-sync safe (no thousands of files)",
+    "Development workflow remains unchanged (tsc for development)",
+    "esbuild successfully bundles MQTT dependency while keeping obsidian external",
+    "Bundled main.js file size is reasonable (under 2MB)",
+    "No runtime errors when loading plugin in Obsidian",
+    "All existing functionality continues to work with bundled version"
+  ],
+  "estimated_complexity": "Medium",
+  "prerequisites": ["Task-5.1: Create Main Plugin File"],
+  "technical_considerations": {
+    "esbuild_configuration": {
+      "entry_point": "src/main.ts",
+      "output": "main.js", 
+      "format": "CommonJS (required by Obsidian)",
+      "platform": "node",
+      "external_dependencies": ["obsidian"],
+      "bundled_dependencies": ["mqtt", "and its sub-dependencies"],
+      "source_maps": "optional (disabled for production)",
+      "minification": "optional (disabled for debugging)"
+    },
+    "distribution_requirements": {
+      "files_required": ["main.js", "manifest.json"],
+      "files_excluded": ["node_modules/*", "src/*", "*.ts", "package.json", "tsconfig.json"],
+      "vault_installation": "Copy main.js and manifest.json to .obsidian/plugins/mqtt-note/",
+      "sync_safety": "Only 2 files, no node_modules directory tree"
+    },
+    "development_workflow": {
+      "unchanged": "npm run build and npm run dev continue to work as before",
+      "new_command": "npm run build:dist for distribution builds",
+      "testing": "Use build:dist output for Obsidian testing",
+      "debugging": "Use regular build output for development debugging"
+    }
+  },
+  "risk_assessment": {
+    "low_risk": [
+      "esbuild is mature and well-tested bundler",
+      "Only one runtime dependency (mqtt) to bundle",
+      "Obsidian plugin architecture supports bundled dependencies",
+      "Development workflow remains unchanged"
+    ],
+    "mitigations": [
+      "Test bundled version thoroughly before marking complete",
+      "Verify MQTT functionality works with bundled dependencies",
+      "Ensure bundle size is reasonable",
+      "Validate no runtime errors with bundled version"
+    ]
+  }
+}

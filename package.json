@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "build": "tsc -p .",
+    "build:dist": "esbuild src/main.ts --bundle --outfile=main.js --format=cjs --platform=node --external:obsidian",
     "dev": "tsc -p . --watch",
     "lint": "eslint src/ --ext .ts",
     "test": "node tests/mqtt-test.js",
@@ -28,7 +29,8 @@
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.0.0"
+    "eslint": "^8.0.0",
+    "esbuild": "^0.19.0"
   },
   "engines": {
     "node": ">=16.0.0"
