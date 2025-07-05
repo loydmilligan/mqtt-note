@@ -318,10 +318,32 @@
 - Clean shutdown on plugin disable
 - Proper error handling throughout
 
-### Task 5.2: Add Command Palette Commands
-**Priority:** Medium  
+### Task 5.2: Setup Distribution Build
+**Priority:** High  
 **Estimated Time:** 30 minutes  
 **Dependencies:** 5.1
+
+**Actions:**
+- [ ] Configure bundling system (esbuild for dependency bundling)
+- [ ] Bundle MQTT dependency into main.js distribution file
+- [ ] Update build scripts in package.json for distribution
+- [ ] Test plugin installation without node_modules
+- [ ] Validate bundled plugin loads correctly in Obsidian
+- [ ] Update .gitignore to exclude bundled artifacts if needed
+
+**Acceptance Criteria:**
+- Plugin works in Obsidian with only main.js and manifest.json
+- No node_modules required in vault installation
+- MQTT functionality works with bundled dependencies
+- Build process is repeatable and documented
+- Distribution package is vault-sync safe (no node_modules issues)
+
+**Rationale:** Early manual testing capability is critical for AI development. This task enables real-world validation immediately after core integration, rather than waiting until Phase 6-7.
+
+### Task 5.3: Add Command Palette Commands
+**Priority:** Medium  
+**Estimated Time:** 30 minutes  
+**Dependencies:** 5.2
 
 **Actions:**
 - [ ] Add "Publish Note to MQTT" command
@@ -344,7 +366,7 @@
 ### Task 6.1: Comprehensive Testing
 **Priority:** High  
 **Estimated Time:** 90 minutes  
-**Dependencies:** 5.2
+**Dependencies:** 5.3
 
 **Actions:**
 - [ ] Test all MVP features thoroughly
