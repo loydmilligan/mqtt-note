@@ -1,6 +1,6 @@
 {
-  "version": "1.2",
-  "generated": "2025-07-04T04:00:00Z",
+  "version": "1.3",
+  "generated": "2025-07-05T00:00:00Z",
   "project": {
     "name": "MQTT Note - Obsidian Plugin",
     "description": "Obsidian plugin enabling seamless two-way communication between notes and MQTT broker",
@@ -502,6 +502,54 @@
       },
       "imports": ["../mqttClient"],
       "sideEffects": ["console-output", "mqtt-connections", "test-reporting"]
+    },
+    "tests/end-to-end-test.js": {
+      "purpose": "Comprehensive end-to-end test suite validating complete bidirectional MQTT-Note communication flow with loop prevention",
+      "exports": {
+        "functions": [
+          {
+            "name": "testNoteToMQTT",
+            "signature": "testNoteToMQTT() -> Promise<boolean>",
+            "description": "Tests publishing notes with mqtt:true frontmatter to MQTT broker with validation"
+          },
+          {
+            "name": "testMQTTToNote", 
+            "signature": "testMQTTToNote() -> Promise<boolean>",
+            "description": "Tests receiving MQTT messages and creating corresponding notes in configured folder"
+          },
+          {
+            "name": "testVariousPayloadFormats",
+            "signature": "testVariousPayloadFormats() -> Promise<boolean>",
+            "description": "Tests handling of string, JSON, number, boolean, array, and nested object payload formats"
+          },
+          {
+            "name": "testLoopPrevention",
+            "signature": "testLoopPrevention() -> Promise<boolean>",
+            "description": "Verifies that notes created from MQTT messages use mqtt_source:true to prevent infinite loops"
+          },
+          {
+            "name": "testErrorScenarios",
+            "signature": "testErrorScenarios() -> Promise<boolean>",
+            "description": "Tests error handling for empty topics, invalid folders, and malformed messages"
+          },
+          {
+            "name": "runE2ETests",
+            "signature": "runE2ETests() -> Promise<boolean>",
+            "description": "Master test runner orchestrating all end-to-end test scenarios with comprehensive reporting"
+          }
+        ],
+        "classes": [],
+        "constants": [
+          {
+            "name": "E2E_TEST_CONFIG",
+            "type": "object",
+            "value": "End-to-end test configuration with broker URL, topics, folders, and performance thresholds",
+            "description": "Centralized configuration for all bidirectional MQTT-Note communication tests"
+          }
+        ]
+      },
+      "imports": ["../main", "../mqttClient", "../noteCreator", "../notePublisher"],
+      "sideEffects": ["console-output", "mqtt-connections", "test-reporting", "mock-file-operations", "performance-monitoring"]
     }
   },
   "dependencies": {
@@ -512,24 +560,27 @@
   },
   "architecture": {
     "main_flow": "main.ts orchestrates plugin lifecycle -> loads settings -> initializes EventEmitter-based MQTT client -> sets up note publisher and creator -> registers commands and event handlers",
-    "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient (with wildcard support) -> NoteCreator -> Obsidian Notes",
+    "data_flow": "Outgoing: Notes with mqtt:true -> NotePublisher -> MQTTClient -> MQTT Broker; Incoming: MQTT Broker -> MQTTClient (with wildcard support) -> Main Plugin routing -> NoteCreator -> Obsidian Notes (with mqtt_source:true to prevent loops)",
     "configuration": "Settings stored in Obsidian's plugin data, managed through MQTTNoteSettingTab UI with broker connection, topic prefixes, and folder configuration",
     "key_components": "MQTTClient (EventEmitter-based broker communication with reconnection), NotePublisher (note-to-MQTT), NoteCreator (MQTT-to-note), Settings (configuration management)",
     "integration_points": "MQTT Broker (external), Obsidian Vault (file system), Obsidian Plugin API (UI and events)",
-    "testing": "Comprehensive test suite validates all MQTT functionality including connection, publish, subscribe, error handling, and reconnection scenarios",
+    "testing": "Comprehensive test suite validates all MQTT functionality including connection, publish, subscribe, error handling, reconnection scenarios, and complete bidirectional flow with loop prevention",
     "event_system": "MQTTClient extends EventEmitter for async communication with events: connected, disconnected, error, message",
-    "error_handling": "Multi-layered error handling with exponential backoff reconnection, graceful fallbacks, and comprehensive error reporting",
-    "quality_assurance": "Live testing against real MQTT brokers with automated test suite covering all functional and error scenarios"
+    "error_handling": "Multi-layered error handling with exponential backoff reconnection, graceful fallbacks, comprehensive error reporting, and intelligent message routing",
+    "quality_assurance": "Live testing against real MQTT brokers with automated test suite covering all functional and error scenarios, plus comprehensive end-to-end validation",
+    "loop_prevention": "Sophisticated mechanism using mqtt_source:true for incoming notes instead of mqtt:true to prevent infinite publish/subscribe loops",
+    "message_processing": "Enhanced main plugin routing system with comprehensive message validation, topic matching, and error containment",
+    "payload_handling": "Robust support for all payload formats (string, JSON, number, boolean, array, nested objects) with proper sanitization and formatting"
   },
   "development": {
     "approach": "manifest-driven development with git workflow integration and comprehensive testing",
     "workflow": "process_task -> implement_task -> check_task -> resolve_mismatch (if needed) -> commit_task",
-    "task_status": "Phase 3 completed - Note Publishing functionality fully implemented with manual and automatic publishing",
-    "current_phase": "Phase 3 complete: Note Publishing (Obsidian → MQTT) with comprehensive auto-publish system",
-    "completed_tasks": ["Task-1.1", "Task-1.2", "Task-1.3", "Task-2.1", "Task-2.2", "Task-3.1", "Task-3.2", "Task-3.3"],
-    "next_phase": "Phase 4: Note Creation (MQTT → Obsidian)",
-    "manifest_evolution": "tracked in docs/manifest_evolution.md with Phase 3 architectural learnings and auto-publish implementation",
+    "task_status": "Phase 4 completed - Complete bidirectional MQTT communication system with comprehensive testing",
+    "current_phase": "Phase 4 complete: Note Creation (MQTT → Obsidian) with full bidirectional flow validation",
+    "completed_tasks": ["Task-1.1", "Task-1.2", "Task-1.3", "Task-2.1", "Task-2.2", "Task-3.1", "Task-3.2", "Task-3.3", "Task-4.1", "Task-4.2", "Task-4.3"],
+    "next_phase": "Phase 5: Main Plugin Integration",
+    "manifest_evolution": "tracked in docs/manifest_evolution.md with Phase 4 architectural learnings including bidirectional communication and loop prevention",
     "version_control": "git commits tied to task completion with clean history",
-    "testing_status": "MQTT client and note publishing fully validated with live broker testing and comprehensive error handling"
+    "testing_status": "Complete bidirectional MQTT communication system fully validated with comprehensive end-to-end testing, loop prevention verification, and all payload format support"
   }
 }
